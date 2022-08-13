@@ -1,6 +1,7 @@
 {
   "private": true,
   "version": "0.2.0",
+  "type": "module",
   "name": "fauna-workers",
   "description": "A template for kick starting a Cloudflare Workers project using Fauna, the data API for modern applications.",
   "main": "build/index.mjs",
@@ -14,6 +15,7 @@
   "dependencies": {
     "@fauna-labs/fauna-schema-migrate": "^2.2.1",
     "faunadb": "^4.5.4",
+    "node-fetch": "^3.2.10",
     "worktop": "^0.7.3"
   },
   "devDependencies": {

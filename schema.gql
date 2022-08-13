@@ -1,0 +1,11 @@
+type Products {
+  serialNumber: String!,
+  title: String!,
+  weightLbs: Float!,
+  quantity: Int!
+}
+
+type Query {
+  products: [Products!]
+    @resolver(name: "listLatestEntries", paginated: true)
+}

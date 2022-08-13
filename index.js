@@ -92,6 +92,53 @@ router.add('GET', '/products/:productId', async (request, response) => {
   }
 });
 
+router.add('GET', '/c-products/:productId', async (request, response) => {
+  try {
+    const productId = request.params.productId;
+    const cacheUrl = new URL(request.url);
+    const cache = caches.default;
+    
+    let response = await cache.match(cacheUrl);
+
+    console.log({response})
+
+    if (!response) {
+      console.log(
+        `Response for request url: ${request.url} not present in cache. Fetching and caching request.`
+      );
+      // If not in cache, get it from origin
+
+      product = await faunaClient.query(
+        Call(
+          "GetProductByID",
+          productId
+        )
+      );
+  
+      console.log({body: response})
+      // Must use Response constructor to inherit all of response's fields
+      response = new Response(product, response);
+
+      console.log({response})
+  
+      // Cache API respects Cache-Control headers. Setting s-max-age to 10
+      // will limit the response to be in cache for 10 seconds max
+  
+      // Any changes made to the response here will be reflected in the cached value
+      response.setHeader('Cache-Control', 's-maxage=10')
+      response.send(200, result);
+      
+      console.log('saving to cache now')
+      cache.put(cacheUrl, response.clone())
+    } else {
+      console.log(`Cache hit for: ${request.url}.`);
+    }
+  } catch (error) {
+    const faunaError = getFaunaError(error);
+    response.send(faunaError.status, faunaError);
+  }
+});
+
 // Sending an HTTP PATCH request to this endpoint creates a new document
 // in the "Products" collection.
 //
